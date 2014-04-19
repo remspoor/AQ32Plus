@@ -191,12 +191,12 @@ void adcCLI()
 				tempVPin	= (uint8_t)readFloatCLI();
 				tempVScale	= readFloatCLI();
 				tempVBias 	= readFloatCLI();
-				tempCells	= (uint8_t)readFloatCLI();
+				//tempCells	= (uint8_t)readFloatCLI();
 
-				if ((tempVPin < 2) || (tempVPin > 7) || (tempVScale == 0.0f))
+				if ((tempVPin < 1) || (tempVPin > 7) || (tempVScale == 0.0f))
 				{
 					cliPrintF("\nVPin, VScale, or Cells entered incorrectly\n");
-					cliPrintF("%3d, %9.4f, %9.4f, %3d", tempVPin, tempVScale, tempVBias, tempCells);
+					cliPrintF("%3d, %9.4f, %9.4f, %3d\n", tempVPin, tempVScale, tempVBias, tempCells);
 					cliPrintF("Please see CLI documentation in the \"aq32plus\\Documentation\" folder\n\n");
 					adcQuery = '?';
 					validQuery = false;
@@ -206,7 +206,7 @@ void adcCLI()
 				eepromConfig.batteryVPin   = tempVPin;
 				eepromConfig.batteryVScale = tempVScale;
 				eepromConfig.batteryVBias  = tempVBias;
-				eepromConfig.batteryCells  = tempCells;
+				//eepromConfig.batteryCells  = tempCells;
 
 				adcQuery = 'a';
 				validQuery = true;
@@ -240,11 +240,11 @@ void adcCLI()
 
 			case '?':
 			   	cliPrint("\n");
-			   	cliPrint("'a' Display ADC Data                       'A' Set RSSI Pin/Min/Max/Warning         RPin;Min;Max;Warning\n");
-			   	cliPrint("                                           'B' Set Battery Cells/Volt Warning       TCells;Warning\n");
-			   	cliPrint("                                           'C' Set Battery Current Config           UExtended;CPin;CScale;CBias\n");
+			   	cliPrint("'a' Display ADC Data                       'A' Set RSSI Pin/Min/Max/Warning         APin;Min;Max;Warning\n");
+			   	cliPrint("                                           'B' Set Battery Cells/Volt Warning       BCells;Warning\n");
+			   	cliPrint("                                           'C' Set Battery Current Config           CExtended;CPin;CScale;CBias\n");
 			   	cliPrint("                                               where extended = 1 (on) or 0 (off).  Must be 1 to measure current\n");
-				cliPrint("                                           'D' Set Battery Voltage Config           VVPin;VScale;VBias\n");
+				cliPrint("                                           'D' Set Battery Voltage Config           DVPin;VScale;VBias\n");
 			   	cliPrint("                                           'M' Set Voltage Monitor Trip Points      Mlow;veryLow;maxLow\n");
 			   	cliPrint("                                           'W' Write EEPROM Parameters\n");
 			   	cliPrint("'x' Exit Sensor CLI                        '?' Command Summary\n\n");
