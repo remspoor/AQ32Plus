@@ -70,6 +70,10 @@ void initMixer(void)
         case MIXERTYPE_FREE:
 		    numberMotor = eepromConfig.freeMixMotors;
         	break;
+
+        case MIXERTYPE_QUADX47:
+            numberMotor = 4;
+            break;
     }
 }
 
@@ -187,6 +191,15 @@ void mixTable(void)
 		        motor[i] = PIDMIX ( eepromConfig.freeMix[i][ROLL], eepromConfig.freeMix[i][PITCH], eepromConfig.freeMix[i][YAW] );
 
         	break;
+
+		///////////////////////////////
+
+		case MIXERTYPE_QUADX47:
+			motor[4] = PIDMIX(  1.0f, -1.0f, -1.0f );      // Front Left  CW
+			motor[5] = PIDMIX( -1.0f, -1.0f,  1.0f );      // Front Right CCW
+			motor[6] = PIDMIX( -1.0f,  1.0f, -1.0f );      // Rear Right  CW
+			motor[7] = PIDMIX(  1.0f,  1.0f,  1.0f );      // Rear Left   CCW
+			break;
 
         ///////////////////////////////
     }
