@@ -48,12 +48,12 @@
 
 #define THROTTLE_WINDOW    48
 
-extern float rxCommand[8];
+extern float rxCommand[NUMCHANNELS];
 
 extern uint8_t commandInDetent[3];
 extern uint8_t previousCommandInDetent[3];
 
-extern uint8_t channelOrder[8];
+extern uint8_t channelOrder[NUMCHANNELS];
 
 ///////////////////////////////////////////////////////////////////////////////
 // Flight Mode Defines and Variables

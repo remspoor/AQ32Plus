@@ -56,13 +56,21 @@ void rssiInit(void)
 
 void rssiMeasure(void)
 {
-	RSSIRaw = (uint16_t)adcValue(eepromConfig.RSSIPin);
+	if (eepromConfig.RSSIPPM)
+	{
+		RSSIRaw = (uint16_t)rxCommand[eepromConfig.RSSIPin];
+	}
+	else
+	{
+		RSSIRaw = (uint16_t)adcValue(eepromConfig.RSSIPin);
+	}
 
     RSSI = (float)(RSSIRaw - eepromConfig.RSSIMin) / (float)(eepromConfig.RSSIMax - eepromConfig.RSSIMin) * 100.0f;
-    if (RSSI < 0)
+    RSSI = constrain(RSSI, 0, 100);
+    /*if (RSSI < 0)
         RSSI = 0;
     if (RSSI > 100)
-        RSSI = 100;
+        RSSI = 100;*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -68,6 +68,9 @@
 #define AUX2     5
 #define AUX3     6
 #define AUX4     7
+#define AUX5     8
+
+#define NUMCHANNELS 9
 
 #define XAXIS    0
 #define YAXIS    1
@@ -300,7 +303,7 @@ typedef struct eepromConfig_t
     uint8_t spektrumChannels;
     uint8_t spektrumHires;
 
-    uint8_t rcMap[8];
+    uint8_t rcMap[NUMCHANNELS];
 
     uint16_t escPwmRate;
     uint16_t servoPwmRate;
@@ -399,6 +402,7 @@ typedef struct eepromConfig_t
 	uint16_t RSSIMax;
 	uint16_t RSSIMin;
 	uint8_t  RSSIWarning;
+	uint8_t  RSSIPPM;
 
     ///////////////////////////////////
 

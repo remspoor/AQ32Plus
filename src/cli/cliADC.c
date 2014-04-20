@@ -90,10 +90,15 @@ void adcCLI()
 				cliPrintF("Battery Current Pin:          %d\n",    eepromConfig.batteryCPin);
 				cliPrintF("Battery Current Divider:   %9.4f\n",    eepromConfig.batteryCScale);
 				cliPrintF("Battery Current Bias:------%9.4f\n",    eepromConfig.batteryCBias);
-				cliPrintF("RSSI Pin:                     %1d\n",   eepromConfig.RSSIPin);
-				cliPrintF("RSSI Min:------------------%4d\n",      eepromConfig.RSSIMin);
-				cliPrintF("RSSI Max:                  %4d\n",      eepromConfig.RSSIMax);
-				cliPrintF("RSSI Warning %:---------------%2d\n\n", eepromConfig.RSSIWarning);
+				cliPrintF("RSSI via:                     ");
+				if (eepromConfig.RSSIPPM)
+					cliPrintF("PPM\n");
+				else
+					cliPrintF("ADC\n");
+				cliPrintF("RSSI Pin:-------------------- %d\n",    eepromConfig.RSSIPin);
+				cliPrintF("RSSI Min:                  %4d\n",      eepromConfig.RSSIMin);
+				cliPrintF("RSSI Max:------------------%4d\n",      eepromConfig.RSSIMax);
+				cliPrintF("RSSI Warning Percentage:     %2d\n\n", eepromConfig.RSSIWarning);
 
                 cliPrintF("Battery Low Setpoint:      %4.2f volts\n",   eepromConfig.batteryLow);
                 cliPrintF("Battery Very Low Setpoint: %4.2f volts\n",   eepromConfig.batteryVeryLow);
@@ -103,6 +108,15 @@ void adcCLI()
                 break;
 
             ///////////////////////////
+
+            case 'b': // Toggle RSSI between ADC and PPM
+            	eepromConfig.RSSIPPM = !eepromConfig.RSSIPPM;
+
+            	adcQuery = 'a';
+            	validQuery = true;
+            	break;
+
+			///////////////////////////
 
         	case 'x':
 			    cliPrint("\nExiting ADC CLI....\n\n");
@@ -118,13 +132,27 @@ void adcCLI()
 				tempMax  = readFloatCLI();
 				tempWarn = readFloatCLI();
 
-				if ((tempPin < 2) || (tempPin > 6))
+				if (eepromConfig.RSSIPPM)
 				{
-					cliPrintF("Invalid RSSI Pin number, valid numbers are 2-6\n");
-					cliPrintF("You entered %2d, please try again\n", tempPin);
-					adcQuery = '?';
-					validQuery = false;
-					break;
+					if ((tempPin < 0) || (tempPin > (NUMCHANNELS - 1)))
+					{
+						cliPrintF("Invalid RSSI PPM channel number, valid numbers are 0-7\n");
+						cliPrintF("You entered %2d, please try again\n", tempPin);
+						adcQuery = '?';
+						validQuery = false;
+						break;
+					}
+				}
+				else
+				{
+					if ((tempPin < 1) || (tempPin > 6))
+					{
+						cliPrintF("Invalid RSSI Pin number, valid numbers are 1-6\n");
+						cliPrintF("You entered %2d, please try again\n", tempPin);
+						adcQuery = '?';
+						validQuery = false;
+						break;
+					}
 				}
 
 				eepromConfig.RSSIPin     = tempPin;
@@ -167,7 +195,7 @@ void adcCLI()
 				tempCScale	= readFloatCLI();
 				tempCBias 	= readFloatCLI();
 
-				if (((tempE != 0) && (tempE != 1)) || (tempCPin < 2) || (tempCPin > 6) || (tempCScale = 0.0f))
+				if (((tempE != 0) && (tempE != 1)) || (tempCPin < 1) || (tempCPin > 6) || (tempCScale = 0.0f))
 				{
 					cliPrintF("\nbatteryExtended, CPin entered incorrectly, or CScale not set\n");
 					cliPrintF("%d, %d, %3.2f, %2.2f\n", tempE, tempCPin, tempCScale, tempCBias);
@@ -241,7 +269,7 @@ void adcCLI()
 			case '?':
 			   	cliPrint("\n");
 			   	cliPrint("'a' Display ADC Data                       'A' Set RSSI Pin/Min/Max/Warning         APin;Min;Max;Warning\n");
-			   	cliPrint("                                           'B' Set Battery Cells/Volt Warning       BCells;Warning\n");
+			   	cliPrint("'b' Toggle RSSI between PPM and ADC        'B' Set Battery Cells/Volt Warning       BCells;Warning\n");
 			   	cliPrint("                                           'C' Set Battery Current Config           CExtended;CPin;CScale;CBias\n");
 			   	cliPrint("                                               where extended = 1 (on) or 0 (off).  Must be 1 to measure current\n");
 				cliPrint("                                           'D' Set Battery Voltage Config           DVPin;VScale;VBias\n");

@@ -478,10 +478,10 @@ void cliCom(void)
             }
 		    else
 		    {
-				for (index = 0; index < 7; index++)
+				for (index = 0; index < (NUMCHANNELS - 1); index++)
                     cliPrintF("%4i, ", rxRead(index));
 
-                cliPrintF("%4i\n", rxRead(7));
+                cliPrintF("%4i\n", rxRead(NUMCHANNELS - 1));
             }
 
         	validCliCommand = false;
@@ -490,10 +490,10 @@ void cliCom(void)
         ///////////////////////////////
 
         case 't': // Processed Receiver Commands
-            for (index = 0; index < 7; index++)
+            for (index = 0; index < (NUMCHANNELS - 1); index++)
                 cliPrintF("%8.2f, ", rxCommand[index]);
 
-            cliPrintF("%8.2f\n", rxCommand[7]);
+            cliPrintF("%8.2f\n", rxCommand[NUMCHANNELS - 1]);
 
             validCliCommand = false;
             break;

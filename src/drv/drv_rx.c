@@ -63,7 +63,7 @@ static struct TIM_Channel { TIM_TypeDef *tim;
 static struct PWM_State { uint8_t  state;          // 0 = looking for rising edge, 1 = looking for falling edge
                           uint16_t riseTime;       // Timer value at rising edge of pulse
                           uint16_t pulseWidth;     // Computed pulse width
-                        } Inputs[8] = { { 0, } };
+                        } Inputs[NUMCHANNELS] = { { 0, } };
 
 static TIM_ICInitTypeDef  TIM_ICInitStructure;
 
@@ -126,7 +126,7 @@ static void serialPWM_IRQHandler(TIM_TypeDef *tim)
     }
     else
     {
-        if (diff > 750 * 2 && diff < 2250 * 2 && chan < 8)    // 750 to 2250 ms is our 'valid' channel range
+        if ((diff > 750 * 2) && (diff < 2250 * 2) && (chan < NUMCHANNELS))    // 750 to 2250 ms is our 'valid' channel range
         {
             Inputs[chan].pulseWidth = diff;
         }
@@ -315,7 +315,7 @@ void rxInit(void)
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,  ENABLE);
 
 		// preset channels to center
-		for (i = 0; i < 8; i++)
+		for (i = 0; i < NUMCHANNELS; i++)
 		    Inputs[i].pulseWidth = RX_PULSE_1p5MS;
 
         GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15;

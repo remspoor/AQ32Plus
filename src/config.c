@@ -40,7 +40,7 @@
 
 #define FLASH_WRITE_EEPROM_ADDR  0x08004000  // FLASH_Sector_1
 
-const char rcChannelLetters[] = "AERT1234";
+const char rcChannelLetters[] = "AERT12345";
 
 static uint8_t checkNewEEPROMConf = 17;
 
@@ -226,16 +226,17 @@ void checkFirstTime(bool eepromReset)
 
         ///////////////////////////////
 
-	    eepromConfig.receiverType  = PARALLEL_PWM;
+	    eepromConfig.receiverType  = SERIAL_PWM;//PARALLEL_PWM;
 	    eepromConfig.spektrumChannels = 7;
 	    eepromConfig.spektrumHires = 0;
 
-	    parseRcChannels("TAER1234");
+	    //parseRcChannels("TAER1234");
+	    parseRcChannels("TAER12345");
 
-	    eepromConfig.escPwmRate   = 450;
+	    eepromConfig.escPwmRate   = 400;//450;
         eepromConfig.servoPwmRate = 50;
 
-        eepromConfig.mixerConfiguration = MIXERTYPE_TRI;
+        eepromConfig.mixerConfiguration = MIXERTYPE_QUADX47;//MIXERTYPE_TRI;
         eepromConfig.yawDirection = 1.0f;
 
         eepromConfig.triYawServoPwmRate = 50;
@@ -271,11 +272,11 @@ void checkFirstTime(bool eepromReset)
 		eepromConfig.freeMix[5][PITCH]    =  0.0f;
         eepromConfig.freeMix[5][YAW  ]    =  0.0f;
 
-        eepromConfig.midCommand   = 3000.0f;
-        eepromConfig.minCheck     = (float)(MINCOMMAND + 200);
-        eepromConfig.maxCheck     = (float)(MAXCOMMAND - 200);
-        eepromConfig.minThrottle  = (float)(MINCOMMAND + 200);
-        eepromConfig.maxThrottle  = (float)(MAXCOMMAND);
+        eepromConfig.midCommand   = 3043.0f;//3000.0f;
+        eepromConfig.minCheck     = 2210.0f;//(float)(MINCOMMAND + 200);
+        eepromConfig.maxCheck     = 3880.0f;//(float)(MAXCOMMAND - 200);
+        eepromConfig.minThrottle  = 2210.0f;//(float)(MINCOMMAND + 200);
+        eepromConfig.maxThrottle  = 3880.0f;//(float)(MAXCOMMAND);
 
         eepromConfig.PID[ROLL_RATE_PID].B               =   1.0f;
         eepromConfig.PID[ROLL_RATE_PID].P               = 250.0f;
@@ -424,7 +425,7 @@ void checkFirstTime(bool eepromReset)
         ///////////////////////////////
 
         eepromConfig.osdEnabled             =  true;
-        eepromConfig.defaultVideoStandard   =  NTSC;
+        eepromConfig.defaultVideoStandard   =  PAL;
         eepromConfig.metricUnits            =  true;
 
         eepromConfig.osdDisplayAlt          =  true;
@@ -465,7 +466,7 @@ void checkFirstTime(bool eepromReset)
 
         ///////////////////////////////
 
-        eepromConfig.batteryCells           = 3;
+        eepromConfig.batteryCells           = 4;//3;
         eepromConfig.voltageMonitorScale    = 11.5f / 1.5f;
         eepromConfig.voltageMonitorBias     = 0.0f;
 
@@ -473,8 +474,8 @@ void checkFirstTime(bool eepromReset)
         eepromConfig.batteryVeryLow           = 3.20f;
         eepromConfig.batteryMaxLow            = 3.10f;
 
-        eepromConfig.batteryVPin            =  7;
-		eepromConfig.batteryCPin            =  5;
+        eepromConfig.batteryVPin            =  1;//7;
+		eepromConfig.batteryCPin            =  2;//5;
 
 		eepromConfig.batteryExtended        =  true;
 
@@ -484,15 +485,16 @@ void checkFirstTime(bool eepromReset)
 		eepromConfig.batteryCBias           =  0.0f;
 		eepromConfig.batteryVWarning		=  3.6f;
 
-		eepromConfig.RSSIPin		    	=  3;
-		eepromConfig.RSSIMax			    =  3450;
-		eepromConfig.RSSIMin		    	=  10;
+		eepromConfig.RSSIPPM                =  true;
+		eepromConfig.RSSIPin		    	=  9;//3;
+		eepromConfig.RSSIMax			    =  3900;//3450;
+		eepromConfig.RSSIMin		    	=  2000;//10;
 		eepromConfig.RSSIWarning		    =  25;
 
         ///////////////////////////////
 
-        eepromConfig.armCount               =  50;
-        eepromConfig.disarmCount            =  0;
+        eepromConfig.armCount               =  35;//50;
+        eepromConfig.disarmCount            =  15;//0;
 
         ///////////////////////////////
 

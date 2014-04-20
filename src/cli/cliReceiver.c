@@ -43,7 +43,7 @@
 
 void receiverCLI()
 {
-    char     rcOrderString[9];
+    char     rcOrderString[NUMCHANNELS];
     float    tempFloat;
     uint8_t  index;
     uint8_t  receiverQuery = 'x';
@@ -84,7 +84,7 @@ void receiverCLI()
 		        }
 
                 cliPrint("Current RC Channel Assignment:  ");
-                for (index = 0; index < 8; index++)
+                for (index = 0; index < NUMCHANNELS; index++)
                     rcOrderString[eepromConfig.rcMap[index]] = rcChannelLetters[index];
 
                 rcOrderString[index] = '\0';
@@ -157,7 +157,7 @@ void receiverCLI()
             ///////////////////////////
 
             case 'B': // Read RC Control Order
-                readStringCLI( rcOrderString, 8 );
+                readStringCLI( rcOrderString, NUMCHANNELS );
                 parseRcChannels( rcOrderString );
 
           	    receiverQuery = 'a';
@@ -232,7 +232,7 @@ void receiverCLI()
 			case '?':
 			   	cliPrint("\n");
 			   	cliPrint("'a' Receiver Configuration Data            'A' Set RX Input Type                    AX, 1=Parallel, 2=Serial, 3=Spektrum\n");
-   		        cliPrint("'b' Set Maximum Rate Commands              'B' Set RC Control Order                 BTAER1234\n");
+   		        cliPrint("'b' Set Maximum Rate Commands              'B' Set RC Control Order                 BTAER12345\n");
 			   	cliPrint("'c' Set Maximum Attitude Command           'C' Set Spektrum Resolution              C0 or C1\n");
 			   	cliPrint("                                           'D' Set Number of Spektrum Channels      D6 thru D12\n");
 			   	cliPrint("                                           'E' Set RC Control Points                EmidCmd;minChk;maxChk;minThrot;maxThrot\n");
