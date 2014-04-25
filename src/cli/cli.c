@@ -561,6 +561,27 @@ void cliCom(void)
 
         ///////////////////////////////
 
+        case '%':   //
+        	cliPrintF("quad is ");
+        	if (armed == true)
+        		cliPrintF("armed,    ");
+        	else
+        		cliPrintF("disarmed, ");
+
+        	cliPrintF("throttle min: ");
+        	if (rxCommand[THROTTLE] < eepromConfig.minCheck)
+        		cliPrintF("true,  ");
+        	else
+        		cliPrintF("false, ");
+
+        	cliPrintF("yaw min: ");
+        	if (rxCommand[YAW] > (eepromConfig.maxCheck - MIDCOMMAND))
+				cliPrintF("true\n");
+			else
+				cliPrintF("false\n");
+
+        	break;
+
         ///////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////

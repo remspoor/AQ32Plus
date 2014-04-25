@@ -58,7 +58,7 @@ void rssiMeasure(void)
 {
 	if (eepromConfig.RSSIPPM)
 	{
-		RSSIRaw = (uint16_t)rxCommand[eepromConfig.RSSIPin];
+		RSSIRaw = (uint16_t)rxCommand[eepromConfig.RSSIPin - 1]; // RX channels index from 0, ADC channels index from 1
 	}
 	else
 	{

@@ -72,7 +72,7 @@ void initMixer(void)
         	break;
 
         case MIXERTYPE_QUADX47:
-            numberMotor = 4;
+            numberMotor = 8;
             break;
     }
 }
@@ -95,12 +95,18 @@ void writeServos(void)
 void writeMotors(void)
 {
     uint8_t i;
+    uint8_t firstMotor;
 
-    for (i = 0; i < numberMotor; i++)
-        pwmEscWrite(i, (uint16_t)motor[i]);
+    if (eepromConfig.mixerConfiguration == MIXERTYPE_QUADX47)
+        firstMotor = 4;
+    else
+    	firstMotor = 0;
 
-    if (eepromConfig.mixerConfiguration == MIXERTYPE_TRI)
-        pwmEscWrite(7, (uint16_t)motor[7]);
+	for (i = firstMotor; i < numberMotor; i++)
+		pwmEscWrite(i, (uint16_t)motor[i]);
+
+	if (eepromConfig.mixerConfiguration == MIXERTYPE_TRI)
+		pwmEscWrite(7, (uint16_t)motor[7]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,9 +116,15 @@ void writeMotors(void)
 void writeAllMotors(float mc)
 {
     uint8_t i;
+    uint8_t firstMotor;
+
+    if (eepromConfig.mixerConfiguration == MIXERTYPE_QUADX47)
+    	firstMotor = 4;
+    else
+    	firstMotor = 0;
 
     // Sends commands to all motors
-    for (i = 0; i < numberMotor; i++)
+    for (i = firstMotor; i < numberMotor; i++)
         motor[i] = mc;
     writeMotors();
 }
@@ -144,6 +156,7 @@ void mixTable(void)
 {
     int16_t maxMotor;
     uint8_t i;
+    uint8_t firstMotor;
 
     ///////////////////////////////////
 
@@ -206,29 +219,34 @@ void mixTable(void)
 
     ///////////////////////////////////
 
+
+    if (eepromConfig.mixerConfiguration == MIXERTYPE_QUADX47)
+    	firstMotor = 4;
+    else
+    	firstMotor = 0;
+
     // this is a way to still have good gyro corrections if any motor reaches its max.
+    maxMotor = motor[firstMotor];
 
-    maxMotor = motor[0];
+	for (i = firstMotor; i < numberMotor; i++)
+		if (motor[i] > maxMotor)
+			maxMotor = motor[i];
 
-    for (i = 1; i < numberMotor; i++)
-        if (motor[i] > maxMotor)
-            maxMotor = motor[i];
+	for (i = firstMotor; i < numberMotor; i++)
+	{
+		if (maxMotor > eepromConfig.maxThrottle)
+			motor[i] -= maxMotor - eepromConfig.maxThrottle;
 
-    for (i = 0; i < numberMotor; i++)
-    {
-        if (maxMotor > eepromConfig.maxThrottle)
-            motor[i] -= maxMotor - eepromConfig.maxThrottle;
+		motor[i] = constrain(motor[i], eepromConfig.minThrottle, eepromConfig.maxThrottle);
 
-        motor[i] = constrain(motor[i], eepromConfig.minThrottle, eepromConfig.maxThrottle);
+		if ((rxCommand[THROTTLE]) < eepromConfig.minCheck)
+		{
+			motor[i] = eepromConfig.minThrottle;
+		}
 
-        if ((rxCommand[THROTTLE]) < eepromConfig.minCheck)
-        {
-            motor[i] = eepromConfig.minThrottle;
-        }
-
-        if ( armed == false )
-            motor[i] = (float)MINCOMMAND;
-    }
+		if ( armed == false )
+			motor[i] = (float)MINCOMMAND;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -273,8 +273,8 @@ void checkFirstTime(bool eepromReset)
         eepromConfig.freeMix[5][YAW  ]    =  0.0f;
 
         eepromConfig.midCommand   = 3043.0f;//3000.0f;
-        eepromConfig.minCheck     = 2210.0f;//(float)(MINCOMMAND + 200);
-        eepromConfig.maxCheck     = 3880.0f;//(float)(MAXCOMMAND - 200);
+        eepromConfig.minCheck     = 2300.0f;//(float)(MINCOMMAND + 200);
+        eepromConfig.maxCheck     = 3800.0f;//(float)(MAXCOMMAND - 200);
         eepromConfig.minThrottle  = 2210.0f;//(float)(MINCOMMAND + 200);
         eepromConfig.maxThrottle  = 3880.0f;//(float)(MAXCOMMAND);
 
@@ -429,7 +429,7 @@ void checkFirstTime(bool eepromReset)
         eepromConfig.metricUnits            =  true;
 
         eepromConfig.osdDisplayAlt          =  true;
-        eepromConfig.osdDisplayAltRow       =  12;
+        eepromConfig.osdDisplayAltRow       =  14;//12;
         eepromConfig.osdDisplayAltCol       =  1;
         eepromConfig.osdDisplayAltHoldState =  false;
 
@@ -441,7 +441,7 @@ void checkFirstTime(bool eepromReset)
         eepromConfig.osdDisplayHdgCol       =  13;
 
         eepromConfig.osdDisplayHdgBar		=  true;
-		eepromConfig.osdDisplayHdgBarRow	=  11;
+		eepromConfig.osdDisplayHdgBarRow	=  14;//11;
 		eepromConfig.osdDisplayHdgBarCol	=  10;
 
 		eepromConfig.osdDisplayVoltage		=  true;
@@ -453,7 +453,7 @@ void checkFirstTime(bool eepromReset)
 		eepromConfig.osdDisplayCurrentCol	=  8;
 
 		eepromConfig.osdDisplayThrot		=  true;
-		eepromConfig.osdDisplayThrotRow		=  12;
+		eepromConfig.osdDisplayThrotRow		=  14;//12;
 		eepromConfig.osdDisplayThrotCol		=  25;
 
 		eepromConfig.osdDisplayTimer		=  true;
@@ -474,12 +474,12 @@ void checkFirstTime(bool eepromReset)
         eepromConfig.batteryVeryLow           = 3.20f;
         eepromConfig.batteryMaxLow            = 3.10f;
 
-        eepromConfig.batteryVPin            =  1;//7;
-		eepromConfig.batteryCPin            =  2;//5;
+        eepromConfig.batteryVPin            =  6;//7;
+		eepromConfig.batteryCPin            =  5;
 
 		eepromConfig.batteryExtended        =  true;
 
-		eepromConfig.batteryVScale          =  (10.0f + 1.5f) / 1.5f;
+		eepromConfig.batteryVScale          =  51.8f;//(10.0f + 1.5f) / 1.5f;
 		eepromConfig.batteryVBias           =  0.0f;
 		eepromConfig.batteryCScale          =  90.2f;
 		eepromConfig.batteryCBias           =  0.0f;

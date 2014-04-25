@@ -195,7 +195,7 @@ void adcCLI()
 				tempCScale	= readFloatCLI();
 				tempCBias 	= readFloatCLI();
 
-				if (((tempE != 0) && (tempE != 1)) || (tempCPin < 1) || (tempCPin > 6) || (tempCScale = 0.0f))
+				if (((tempE != 0) && (tempE != 1)) || (tempCPin < 1) || (tempCPin > 6) || (tempCScale == 0.0f))
 				{
 					cliPrintF("\nbatteryExtended, CPin entered incorrectly, or CScale not set\n");
 					cliPrintF("%d, %d, %3.2f, %2.2f\n", tempE, tempCPin, tempCScale, tempCBias);
