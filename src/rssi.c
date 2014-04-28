@@ -69,7 +69,7 @@ void rssiMeasure(void)
     RSSI = constrain(RSSI, 0, 100);
     /*if (RSSI < 0)
         RSSI = 0;
-    if (RSSI > 100)
+    else if (RSSI > 100)
         RSSI = 100;*/
 }
 
