@@ -192,6 +192,8 @@ void SysTick_Handler(void)
 			    readPressureRequestTemperature();
 			    newPressureReading = true;
 			}
+
+			sdCardCountDown();
         }
 
         ///////////////////////////////
@@ -305,6 +307,7 @@ void systemInit(void)
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1,   ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2,   ENABLE);
 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1,   ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2,   ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3,   ENABLE);
 
@@ -341,27 +344,27 @@ void systemInit(void)
     gpsPortPrintBinary       = &uart2PrintBinary;
     gpsPortRead              = &uart2Read;
 
-	telemPortAvailable       = &uart1Available;
-	telemPortPrint           = &uart1Print;
-	telemPortPrintF          = &uart1PrintF;
-	telemPortRead            = &uart1Read;
+    openLogPortPrintF        = &uart3PrintF;
 
 	///////////////////////////////////
 
 	initMixer();
 
-    usbInit();
-
     ledInit();
+
+    usbInit();
 
     uart1Init();
     uart2Init();
-
-    BLUE_LED_ON;
+    uart3Init();
 
     ///////////////////////////////////
 
+    BLUE_LED_ON;
+
     delay(10000);  // 10 seconds of 20 second delay for sensor stabilization
+
+    ///////////////////////////////////
 
     checkUsbActive();
 
@@ -387,6 +390,15 @@ void systemInit(void)
     cliPortPrintF(  "PCLK2->  %3d MHz\n",   rccClocks.PCLK2_Frequency  / 1000000);
     cliPortPrintF(  "SYSCLK-> %3d MHz\n\n", rccClocks.SYSCLK_Frequency / 1000000);
 
+    if (eepromConfig.receiverType == PPM)
+    	cliPortPrint("Using PPM Receiver....\n\n");
+    else if (eepromConfig.receiverType == PWM)
+        cliPortPrint("Using PWM Receiver....\n\n");
+    else if (eepromConfig.receiverType == SPEKTRUM)
+    	cliPortPrint("Using Spektrum Satellite Receiver....\n\n");
+    else
+    	cliPortPrint("Error....\n\n");
+
     initUBLOX();
 
     delay(10000);  // Remaining 10 seconds of 20 second delay for sensor stabilization - probably not long enough..
@@ -397,7 +409,13 @@ void systemInit(void)
     i2cInit(I2C1);
     i2cInit(I2C2);
     pwmServoInit();
-    rxInit();
+
+    if (eepromConfig.receiverType == SPEKTRUM)
+        spektrumInit();
+    else
+        rxInit();
+
+    spiInit(SPI1);
     spiInit(SPI2);
     spiInit(SPI3);
     timingFunctionsInit();
@@ -408,6 +426,26 @@ void systemInit(void)
     initMavlink();
     initMax7456();
     initPID();
+
+    switch (initSDCard())
+    {
+        case  0:
+        	cliPortPrint("SD Card Initialization Failed....\n\n");
+        	break;
+
+        case  1:
+        	cliPortPrint("SD Card Initialized, MMC Version 3....\n\n");
+        	break;
+
+        case  2:
+        	cliPortPrint("SD Card Initialized, SD Version 1....\n\n");
+        	break;
+
+        case  4:
+        case 12:
+        	cliPortPrint("SD Card Initialized, SD Version 2....\n\n");
+        	break;
+    }
 
     GREEN_LED_ON;
 

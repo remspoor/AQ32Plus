@@ -66,13 +66,14 @@ char *readStringCLI(char *data, uint8_t length)
 
     do
     {
-        if ((data[index] = cliPortRead()) == 0)
+        if (cliPortAvailable() == false)
         {
             delay(10);
             timeout++;
         }
         else
         {
+            data[index] = cliPortRead();
             timeout = 0;
             index++;
         }
@@ -96,13 +97,14 @@ float readFloatCLI(void)
 
     do
     {
-        if ((data[index] = cliPortRead()) == 0)
+        if (cliPortAvailable() == false)
         {
             delay(10);
             timeout++;
         }
         else
         {
+            data[index] = cliPortRead();
             timeout = 0;
             index++;
         }
@@ -144,8 +146,8 @@ void cliCom(void)
 	uint8_t  numChannels = 8;
 	char mvlkToggleString[5] = { 0, 0, 0, 0, 0 };
 
-	if (eepromConfig.receiverType == SERIAL_PWM)
-		numChannels = eepromConfig.serialChannels;
+	if (eepromConfig.receiverType == PPM)
+		numChannels = eepromConfig.ppmChannels;
 
 	if ((cliPortAvailable() && !validCliCommand))
     {
@@ -520,13 +522,13 @@ void cliCom(void)
 			///////////////////////////////
 
 			case 's': // Raw Receiver Commands
-				if (eepromConfig.receiverType == SPEKTRUM)
-				{
-					for (index = 0; index < eepromConfig.spektrumChannels - 1; index++)
-						 cliPortPrintF("%4ld, ", spektrumChannelData[index]);
+				if ((eepromConfig.receiverType == SPEKTRUM) && (maxChannelNum > 0))
+                {
+		    		for (index = 0; index < maxChannelNum - 1; index++)
+                         cliPortPrintF("%4ld, ", spektrumBuf[index]);
 
-					cliPortPrintF("%4ld\n", spektrumChannelData[eepromConfig.spektrumChannels - 1]);
-				}
+                    cliPortPrintF("%4ld\n", spektrumBuf[maxChannelNum - 1]);
+			    }
 				else
 				{
 					for (index = 0; index < numChannels - 1; index++)
@@ -566,10 +568,10 @@ void cliCom(void)
 				cliPortPrintF("%4ld, ", TIM8->CCR3);
 				cliPortPrintF("%4ld, ", TIM8->CCR2);
 				cliPortPrintF("%4ld, ", TIM8->CCR1);
+				cliPortPrintF("%4ld, ", TIM2->CCR1);
 				cliPortPrintF("%4ld, ", TIM2->CCR2);
 				cliPortPrintF("%4ld, ", TIM3->CCR1);
-				cliPortPrintF("%4ld, ", TIM3->CCR2);
-				cliPortPrintF("%4ld\n", TIM2->CCR1);
+				cliPortPrintF("%4ld\n", TIM3->CCR2);
 
 				validCliCommand = false;
 				break;

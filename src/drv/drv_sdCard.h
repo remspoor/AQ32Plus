@@ -37,15 +37,37 @@
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////////////
-// Receiver Initialization
+
+#define SD_CARD_SPI           SPI1
+
+#define SD_CARD_CS_GPIO       GPIOE
+#define SD_CARD_CS_PIN        GPIO_Pin_10
+
+#define DISABLE_SD_CARD       GPIO_SetBits(SD_CARD_CS_GPIO,   SD_CARD_CS_PIN)
+#define ENABLE_SD_CARD        GPIO_ResetBits(SD_CARD_CS_GPIO, SD_CARD_CS_PIN)
+
+///////////////////////////////////////
+
+#define CT_UNKNOWN  0x00             // Unknown
+
+// From diskio.h:
+
+#define CT_MMC		0x01		     // MMC ver 3
+#define CT_SD1		0x02		     // SD  ver 1
+#define CT_SD2		0x04		     // SD  ver 2
+#define CT_SDC		(CT_SD1|CT_SD2)	 // SD
+#define CT_BLOCK	0x08		     // Block addressing
+
+///////////////////////////////////////////////////////////////////////////////
+// SD Card Initialization
 ///////////////////////////////////////////////////////////////////////////////
 
-void rxInit(void);
+uint8_t initSDCard(void);
 
 ///////////////////////////////////////////////////////////////////////////////
-// Receiver Read
+// SD Card Count down timers
 ///////////////////////////////////////////////////////////////////////////////
 
-uint16_t rxRead(uint8_t channel);
+void sdCardCountDown(void);
 
 ///////////////////////////////////////////////////////////////////////////////
