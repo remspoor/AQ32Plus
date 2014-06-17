@@ -858,7 +858,9 @@ void cliCom(void)
 
 			///////////////////////////////
 
-			case 'X': // Not Used
+			case 'X': // System CLI
+				systemCLI();
+
 				cliQuery = 'x';
 				validCliCommand = false;
 				break;
@@ -925,7 +927,7 @@ void cliCom(void)
 				cliPortPrint("'u' Command In Detent Discretes            'U' EEPROM CLI\n");
 				cliPortPrint("'v' Motor PWM Outputs                      'V' Reset EEPROM Parameters\n");
 				cliPortPrint("'w' Servo PWM Outputs                      'W' Write EEPROM Parameters\n");
-				cliPortPrint("'x' Terminate Serial Communication         'X' Not Used\n");
+				cliPortPrint("'x' Terminate Serial Communication         'X' System CLI\n");
 				cliPortPrint("\n");
 
 				cliPortPrint("Press space bar for more, or enter a command....\n");
