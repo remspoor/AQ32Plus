@@ -40,7 +40,7 @@
 
 /*
     DMA UART routines idea lifted from AutoQuad
-    Copyright © 2011  Bill Nesbitt
+    Copyright ï¿½ 2011  Bill Nesbitt
 */
 
 ///////////////////////////////////////////////////////////////////////////////

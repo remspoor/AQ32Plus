@@ -47,6 +47,7 @@ void systemCLI()
 
 	char     baudString[7];
 	int		 i;
+	uint8_t	 res;
 
 	uint8_t  systemQuery = 'x';
     uint8_t  validQuery = false;
@@ -107,6 +108,81 @@ void systemCLI()
 
             ///////////////////////////
 
+    		case 'E': // Connect CLI to UART1
+    			if (usbDeviceConfigured) {
+    				cliPortPrint("\nReset board when ready.\n");
+    				cliPortPrint("Connecting to UART1....\n\n");
+
+    				uart1ClearBuffer();
+
+    				while (true) {
+    					if (uart1Available()) {
+    						res = uart1Read();
+    						cliPortPrint(&res);
+    					}
+    					if (cliPortAvailable()) {
+    						telemetryWrite(cliPortRead());
+    					}
+    				}
+    			} else {
+    				cliPortPrint("\nFunction unavailable when not connected via USB..\n\n");
+    			}
+
+    			validQuery = false;
+    			break;
+
+    		///////////////////////////
+
+    		case 'F': // Connect CLI to UART2
+    			if (usbDeviceConfigured) {
+    				cliPortPrint("\nReset board when ready.\n");
+    				cliPortPrint("Connecting to UART2....\n\n");
+
+    				uart2ClearBuffer();
+
+    				while (true) {
+    					if (uart2Available()) {
+    						res = uart2Read();
+    						cliPortPrint(&res);
+    					}
+    					if (cliPortAvailable()) {
+    						uart2Write(cliPortRead());
+    					}
+    				}
+    			} else {
+    				cliPortPrint("\nFunction unavailable when not connected via USB..\n\n");
+    			}
+
+    			validQuery = false;
+    			break;
+
+    		///////////////////////////
+
+    		case 'G': // Connect CLI to UART3
+    			if (usbDeviceConfigured) {
+    				cliPortPrint("\nReset board when ready.\n");
+    				cliPortPrint("Connecting to UART3....\n\n");
+
+    				uart3ClearBuffer();
+
+    				while (true) {
+    					if (uart3Available()) {
+    						res = uart3Read();
+    						cliPortPrint(&res);
+    					}
+    					if (cliPortAvailable()) {
+    						uart3Write(cliPortRead());
+    					}
+    				}
+    			} else {
+    				cliPortPrint("\nFunction unavailable when not connected via USB..\n\n");
+    			}
+
+    			validQuery = false;
+    			break;
+
+    		///////////////////////////
+
             case 'R': // Reset to Bootloader
     			cliPortPrint("Entering Bootloader....\n\n");
     			delay(100);
@@ -146,6 +222,10 @@ void systemCLI()
                 cliPortPrint("                                           'B' Set USART1 baudrate    Bxxxxxx\n");
                 cliPortPrint("                                           'C' Set USART2 baudrate    Cxxxxxx\n");
                 cliPortPrint("                                           'D' Set USART3 baudrate    Dxxxxxx\n");
+                cliPortPrint("\n");
+                cliPortPrint("                                           'E' Connect CLI to UART1\n");
+                cliPortPrint("                                           'F' Connect CLI to UART2\n");
+                cliPortPrint("                                           'G' Connect CLI to UART3\n");
                 cliPortPrint("\n");
 				cliPortPrint("                                           'R' Reset and Enter Bootloader\n");
 				cliPortPrint("                                           'S' Reset\n");
