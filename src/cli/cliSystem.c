@@ -43,7 +43,12 @@
 
 void systemCLI()
 {
-    uint8_t  systemQuery = 'x';
+    USART_InitTypeDef USART_InitStructure;
+
+	char     baudString[7];
+	int		 i;
+
+	uint8_t  systemQuery = 'x';
     uint8_t  validQuery = false;
 
     cliBusy = true;
@@ -68,13 +73,41 @@ void systemCLI()
 
             case 'a': // System Configuration
                 cliPortPrint("\nSystem Configuration:\n");
+                cliPortPrintF("USART1 settings: %6l,%4h,%4h,%4h,%4h,%4h\n",
+                		USART_InitStructure.USART_BaudRate,
+                		USART_InitStructure.USART_WordLength,
+                		USART_InitStructure.USART_StopBits,
+                		USART_InitStructure.USART_Parity,
+                		USART_InitStructure.USART_Mode,
+                		USART_InitStructure.USART_HardwareFlowControl);
+
+
 
                 validQuery = false;
                 break;
 
             ///////////////////////////
 
-    		case 'R': // Reset to Bootloader
+            case 'B': // Read baudrate
+				readStringCLI( baudString, 6 );
+
+				cliPortPrint("Baudrate received by command: ");
+				cliPortPrint(baudString);
+
+				i = atoi(baudString);
+
+				cliPortPrintF("\nReinitialize USART1 with %6l baud\n", i);
+				USART_InitStructure.USART_BaudRate = i;
+				USART_Init(USART1, &USART_InitStructure);
+				cliPortPrint("done..\n");
+
+
+                validQuery = false;
+        	    break;
+
+            ///////////////////////////
+
+            case 'R': // Reset to Bootloader
     			cliPortPrint("Entering Bootloader....\n\n");
     			delay(100);
     			systemReset(true);
@@ -91,7 +124,7 @@ void systemCLI()
     		///////////////////////////
 
 			case 'x':
-			    cliPortPrint("\nExiting Telemetry CLI....\n\n");
+			    cliPortPrint("\nExiting System CLI....\n\n");
 			    cliBusy = false;
 			    return;
 			    break;
@@ -109,7 +142,10 @@ void systemCLI()
 
             case '?':
 			   	cliPortPrint("\n");
-                cliPortPrint("'a' Display system parameters");
+                cliPortPrint("'a' Display system parameters\n");
+                cliPortPrint("                                           'B' Set USART1 baudrate    Bxxxxxx\n");
+                cliPortPrint("                                           'C' Set USART2 baudrate    Cxxxxxx\n");
+                cliPortPrint("                                           'D' Set USART3 baudrate    Dxxxxxx\n");
                 cliPortPrint("\n");
 				cliPortPrint("                                           'R' Reset and Enter Bootloader\n");
 				cliPortPrint("                                           'S' Reset\n");
