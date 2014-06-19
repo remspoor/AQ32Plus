@@ -97,9 +97,15 @@ void systemCLI()
 
 				i = atoi(baudString);
 
-				cliPortPrintF("\nReinitialize USART1 with %6l baud\n", i);
-				USART_InitStructure.USART_BaudRate = i;
-				USART_Init(USART1, &USART_InitStructure);
+				cliPortPrintF("\nReinitialize USART1 with %l,N,8,1\n", i);
+				USART_InitStructure.USART_BaudRate            = i;
+			    USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
+			    USART_InitStructure.USART_StopBits            = USART_StopBits_1;
+			    USART_InitStructure.USART_Parity              = USART_Parity_No;
+			    USART_InitStructure.USART_Mode                = USART_Mode_Rx | USART_Mode_Tx;
+			    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+
+			    USART_Init(USART1, &USART_InitStructure);
 				cliPortPrint("done..\n");
 
 
