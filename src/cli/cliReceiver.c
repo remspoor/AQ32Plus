@@ -83,6 +83,8 @@ void receiverCLI()
                     cliPortPrint("     PWM\n");
                 else if (eepromConfig.receiverType == SPEKTRUM)
                 	cliPortPrint("Spektrum\n");
+                else if (eepromConfig.receiverType == SBUS)
+                	cliPortPrint("    SBUS\n");
                 else
                 	cliPortPrint("Error...\n");
 
@@ -295,7 +297,7 @@ void receiverCLI()
 
 			case '?':
 			   	cliPortPrint("\n");
-			   	cliPortPrint("'a' Receiver Configuration Data            'A' Set RX Input Type                    AX, 0=PPM, 1=PWM, 2=Spektrum\n");
+			   	cliPortPrint("'a' Receiver Configuration Data            'A' Set RX Input Type                    AX, 0=PPM, 1=PWM, 2=Spektrum, 3=SBUS\n");
    		        cliPortPrint("'b' Set Maximum Rate Commands              'B' Set RC Control Order                 BTAER12345678\n");
 			   	cliPortPrint("'c' Set Maximum Attitude Command\n");
 			   	cliPortPrint("                                           'E' Set RC Control Points                EmidCmd;minChk;maxChk;minThrot;maxThrot\n");

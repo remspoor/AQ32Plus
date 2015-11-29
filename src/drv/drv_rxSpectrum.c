@@ -86,19 +86,10 @@ uint16_t channelData;
 uint8_t  i;
 uint8_t  maxChannelNum = 0;
 
-uint8_t rcActive = false;
-
 ///////////////////////////////////////
 
 uint32_t primarySpektrumFrameLostCnt;
 uint32_t slaveSpektrumFrameLostCnt;
-
-uint32_t rcDataLostCnt;
-
-enum frameWatchDogConsts {
-  rcDataLostTime         = 1000, // 1 second
-  spektrumFrameLostTime  = 1000, // 1 second
-  };
 
 ///////////////////////////////////////////////////////////////////////////////
 // Decode Channels
@@ -217,7 +208,7 @@ void processSpektrumData(void)
 //  Spektrum Parser captures frame data by using time between frames to sync on
 ///////////////////////////////////////////////////////////////////////////////
 
-static inline void spektrumParser(uint8_t c, spektrumStateType* spektrumState, bool slaveReceiver)
+void spektrumParser(uint8_t c, spektrumStateType* spektrumState, bool slaveReceiver)
 {
     uint16_t channelData;
 	uint8_t  timedOut;
@@ -370,18 +361,6 @@ static inline void spektrumParser(uint8_t c, spektrumStateType* spektrumState, b
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  RC Data Lost Handler
-///////////////////////////////////////////////////////////////////////////////
-
-void rcDataLost(void)
-{
-    evrPush(EVR_rcDataLost,0);
-
-    // Maybe do something more interesting like auto-descent or hover-hold.
-    // armed = false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 //  Spektrum Frame Lost Handlers
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -393,20 +372,6 @@ void primarySpektrumFrameLost(void)
 void slaveSpektrumFrameLost(void)
 {
     evrPush(EVR_slaveSpektrumFrameLost,0);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//  Primary Spektrum Satellite Receiver UART Interrupt Handler
-///////////////////////////////////////////////////////////////////////////////
-
-void USART3_IRQHandler(void)
-{
-    if (((USART3->CR1 & USART_CR1_RXNEIE) != 0) && ((USART3->SR & USART_SR_RXNE) != 0))
-    {
-        uint8_t b = USART_ReceiveData(USART3);
-
-        spektrumParser(b, &primarySpektrumState, false);
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -521,7 +486,7 @@ void spektrumInit(void)
 
     USART_Cmd(USART3, ENABLE);
 
-    watchDogRegister(&primarySpektrumFrameLostCnt, spektrumFrameLostTime, primarySpektrumFrameLost, true );
+    watchDogRegister(&primarySpektrumFrameLostCnt, rcFrameLostTime, primarySpektrumFrameLost, true );
 
     ///////////////////////////////////
 
@@ -556,7 +521,7 @@ void spektrumInit(void)
 
         USART_Cmd(UART4, ENABLE);
 
-        watchDogRegister(&slaveSpektrumFrameLostCnt, spektrumFrameLostTime, slaveSpektrumFrameLost, true );
+        watchDogRegister(&slaveSpektrumFrameLostCnt, rcFrameLostTime, slaveSpektrumFrameLost, true );
 	}
 
 	///////////////////////////////////
@@ -568,9 +533,9 @@ void spektrumInit(void)
 // Spektrum Read
 ///////////////////////////////////////////////////////////////////////////////
 
-uint16_t spektrumRead(uint8_t channel)
+float spektrumRead(uint8_t channel)
 {
-    return spektrumBuf[channel];
+    return (float)spektrumBuf[channel];
 }
 
 ///////////////////////////////////////////////////////////////////////////////

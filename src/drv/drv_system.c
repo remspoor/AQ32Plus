@@ -396,6 +396,8 @@ void systemInit(void)
         cliPortPrint("Using PWM Receiver....\n\n");
     else if (eepromConfig.receiverType == SPEKTRUM)
     	cliPortPrint("Using Spektrum Satellite Receiver....\n\n");
+    else if (eepromConfig.receiverType == SBUS)
+    	cliPortPrint("Using SBUS Receiver....\n\n");
     else
     	cliPortPrint("Error....\n\n");
 
@@ -412,6 +414,8 @@ void systemInit(void)
 
     if (eepromConfig.receiverType == SPEKTRUM)
         spektrumInit();
+    else if (eepromConfig.receiverType == SBUS)
+    	sBusInit();
     else
         rxInit();
 
@@ -448,6 +452,8 @@ void systemInit(void)
     }
 
     GREEN_LED_ON;
+
+    orientSensors();
 
     initMPU6000();
     initMag();

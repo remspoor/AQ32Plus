@@ -37,92 +37,61 @@
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////////////
-
-#define MPU6000_CONFIG		    	0x1A
-
-#define BITS_DLPF_CFG_256HZ         0x00
-#define BITS_DLPF_CFG_188HZ         0x01
-#define BITS_DLPF_CFG_98HZ          0x02
-#define BITS_DLPF_CFG_42HZ          0x03
-
-#define MPU6000_SPI           SPI3
-
-#define MPU6000_CS_GPIO       GPIOB
-#define MPU6000_CS_GPIO_CLOCK RCC_AHB1Periph_GPIOB
-#define MPU6000_CS_PIN        GPIO_Pin_8
-
-#define DISABLE_MPU6000       GPIO_SetBits(MPU6000_CS_GPIO,   MPU6000_CS_PIN)
-#define ENABLE_MPU6000        GPIO_ResetBits(MPU6000_CS_GPIO, MPU6000_CS_PIN);
-
-#define GYRO_SCALE_FACTOR  0.00053292f  // (4/131) * pi/180   (32.75 LSB = 1 DPS)
-#define ACCEL_SCALE_FACTOR 0.00119708f  // (1/8192) * 9.8065  (8192 LSB = 1 G)
-
-///////////////////////////////////////////////////////////////////////////////
-// MPU6000 Variables
+// Receiver Defines and Variables
 ///////////////////////////////////////////////////////////////////////////////
 
-extern float   accelOneG;
+#define MAX_SPEKTRUM_FRAMES         2
 
-extern float   accelTCBias[3];
-
-extern int32_t accelSum100Hz[3];
-
-extern int32_t accelSum500Hz[3];
-
-extern int32_t accelSummedSamples100Hz[3];
-
-extern int32_t accelSummedSamples500Hz[3];
-
-extern int16andUint8_t rawAccel[3];
-
-extern float nonRotatedAccelData[3];
+#define SPEKTRUM_CHANNELS_PER_FRAME 7
 
 ///////////////////////////////////////
 
-extern float gyroRTBias[3];
+struct spektrumStateStruct
+{
+    uint8_t  reSync;
+    uint8_t  spektrumTimer;
+    uint8_t  sync;
+    uint8_t  channelCnt;
+    uint8_t  frameCnt;
+    uint8_t  highByte;
+    uint8_t  secondFrame;
+    uint16_t lostFrameCnt;
+    uint8_t  rcAvailable;
+    uint16_t values[SPEKTRUM_CHANNELS_PER_FRAME * MAX_SPEKTRUM_FRAMES];
+};
 
-extern float gyroTCBias[3];
+typedef struct spektrumStateStruct spektrumStateType;
 
-extern int32_t gyroSum500Hz[3];
+extern spektrumStateType primarySpektrumState;
 
-extern int32_t gyroSummedSamples500Hz[3];
+extern spektrumStateType slaveSpektrumState;
 
-extern int16andUint8_t rawGyro[3];
+extern int16_t spektrumBuf[SPEKTRUM_CHANNELS_PER_FRAME * MAX_SPEKTRUM_FRAMES];
 
-extern float nonRotatedGyroData[3];
-
-///////////////////////////////////////
-
-extern uint8_t accelCalibrating;
-
-extern uint8_t mpu6000Calibrating;
-
-extern float   mpu6000Temperature;
-
-extern int16andUint8_t rawMPU6000Temperature;
-
-///////////////////////////////////////////////////////////////////////////////
-// MPU6000 Initialization
-///////////////////////////////////////////////////////////////////////////////
-
-void initMPU6000(void);
+extern uint8_t maxChannelNum;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Read MPU6000
+//  Spektrum Parser captures frame data by using time between frames to sync on
 ///////////////////////////////////////////////////////////////////////////////
 
-void readMPU6000(void);
+void spektrumParser(uint8_t c, spektrumStateType* spektrumState, bool slaveReceiver);
 
 ///////////////////////////////////////////////////////////////////////////////
-// Compute MPU6000 Runtime Data
+// Spektrum Initialization
 ///////////////////////////////////////////////////////////////////////////////
 
-void computeMPU6000RTData(void);
+void spektrumInit(void);
 
 ///////////////////////////////////////////////////////////////////////////////
-// Compute MPU6000 Temperature Compensation Bias
+// Spektrum Read
 ///////////////////////////////////////////////////////////////////////////////
 
-void computeMPU6000TCBias(void);
+float spektrumRead(uint8_t channel);
+
+///////////////////////////////////////////////////////////////////////////////
+// Check Spektrum Bind
+///////////////////////////////////////////////////////////////////////////////
+
+void checkSpektrumBind(void);
 
 ///////////////////////////////////////////////////////////////////////////////

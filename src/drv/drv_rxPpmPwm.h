@@ -40,54 +40,27 @@
 // Receiver Defines and Variables
 ///////////////////////////////////////////////////////////////////////////////
 
-#define MAX_SPEKTRUM_FRAMES         2
-
-#define SPEKTRUM_CHANNELS_PER_FRAME 7
-
-///////////////////////////////////////
-
-struct spektrumStateStruct
+struct pwmState
 {
-    uint8_t  reSync;
-    uint8_t  spektrumTimer;
-    uint8_t  sync;
-    uint8_t  channelCnt;
-    uint8_t  frameCnt;
-    uint8_t  highByte;
-    uint8_t  secondFrame;
-    uint16_t lostFrameCnt;
-    uint8_t  rcAvailable;
-    uint16_t values[SPEKTRUM_CHANNELS_PER_FRAME * MAX_SPEKTRUM_FRAMES];
+	uint8_t  state;          // 0 = looking for rising edge, 1 = looking for falling edge
+    uint16_t riseTime;       // Timer value at rising edge of pulse
+    uint16_t pulseWidth;     // Computed pulse width
 };
 
-typedef struct spektrumStateStruct spektrumStateType;
+typedef struct pwmState pwmState_t;
 
-extern spektrumStateType primarySpektrumState;
-
-extern spektrumStateType slaveSpektrumState;
-
-extern int16_t spektrumBuf[SPEKTRUM_CHANNELS_PER_FRAME * MAX_SPEKTRUM_FRAMES];
-
-extern uint8_t maxChannelNum;
-
-extern uint8_t rcActive;
+extern pwmState_t Inputs[12];
 
 ///////////////////////////////////////////////////////////////////////////////
-// Spektrum Initialization
+// Receiver Initialization
 ///////////////////////////////////////////////////////////////////////////////
 
-void spektrumInit(void);
+void rxInit(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Receiver Read
 ///////////////////////////////////////////////////////////////////////////////
 
-uint16_t spektrumRead(uint8_t channel);
-
-///////////////////////////////////////////////////////////////////////////////
-// Check Spektrum Bind
-///////////////////////////////////////////////////////////////////////////////
-
-void checkSpektrumBind(void);
+float rxRead(uint8_t channel);
 
 ///////////////////////////////////////////////////////////////////////////////

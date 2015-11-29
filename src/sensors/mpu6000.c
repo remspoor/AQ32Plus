@@ -114,6 +114,8 @@ float accelTCBias[3] = { 0.0f, 0.0f, 0.0f };
 
 int16andUint8_t rawAccel[3];
 
+float nonRotatedAccelData[3];
+
 ///////////////////////////////////////
 
 float gyroRTBias[3];
@@ -125,6 +127,8 @@ int32_t gyroSummedSamples500Hz[3];
 float gyroTCBias[3];
 
 int16andUint8_t rawGyro[3];
+
+float nonRotatedGyroData[3];
 
 ///////////////////////////////////////
 
@@ -216,7 +220,6 @@ void initMPU6000(void)
 void readMPU6000(void)
 {
     ENABLE_MPU6000;
-
                                      spiTransfer(MPU6000_SPI, MPU6000_ACCEL_XOUT_H | 0x80);
 
     rawAccel[XAXIS].bytes[1]       = spiTransfer(MPU6000_SPI, 0x00);

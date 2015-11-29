@@ -42,7 +42,7 @@
 
 const char rcChannelLetters[] = "AERT12345678";
 
-static uint8_t checkNewEEPROMConf = 21;
+static uint8_t checkNewEEPROMConf = 24;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -214,6 +214,10 @@ void checkFirstTime(bool eepromReset)
 
 	    ///////////////////////////////////
 
+	    eepromConfig.sensorOrientation = 1;  // No rotation
+
+	    ///////////////////////////////////
+
         eepromConfig.rollAndPitchRateScaling = 100.0 / 180000.0 * PI;  // Stick to rate scaling for 100 DPS
 
 	    eepromConfig.yawRateScaling          = 100.0 / 180000.0 * PI;  // Stick to rate scaling for 100 DPS
@@ -278,6 +282,12 @@ void checkFirstTime(bool eepromReset)
 		eepromConfig.freeMix[7][ROLL ]    =  0.0f;
 		eepromConfig.freeMix[7][PITCH]    =  0.0f;
         eepromConfig.freeMix[7][YAW  ]    =  0.0f;
+
+        eepromConfig.rollAttAltCompensationGain   =  1.0f;
+        eepromConfig.rollAttAltCompensationLimit  =  0.0f * D2R;
+
+        eepromConfig.pitchAttAltCompensationGain  =  1.0f;
+        eepromConfig.pitchAttAltCompensationLimit =  0.0f * D2R;
 
         eepromConfig.midCommand   = 3000.0f;
         eepromConfig.minCheck     = (float)(MINCOMMAND + 200);

@@ -475,46 +475,54 @@ void cliCom(void)
 
 			case 'r':
 				if (flightMode == RATE)
-					cliPortPrint("Flight Mode = RATE      ");
+					cliPortPrint("Flight Mode:RATE      ");
 				else if (flightMode == ATTITUDE)
-					cliPortPrint("Flight Mode = ATTITUDE  ");
+					cliPortPrint("Flight Mode:ATTITUDE  ");
 				else if (flightMode == GPS)
-					cliPortPrint("Flight Mode = GPS       ");
+					cliPortPrint("Flight Mode:GPS       ");
 
 				if (headingHoldEngaged == true)
-					cliPortPrint("Heading Hold = ENGAGED     ");
+					cliPortPrint("Heading Hold:ENGAGED     ");
 				else
-					cliPortPrint("Heading Hold = DISENGAGED  ");
-
-				cliPortPrint("Alt Hold = ");
+					cliPortPrint("Heading Hold:DISENGAGED  ");
 
 				switch (verticalModeState)
 				{
 					case ALT_DISENGAGED_THROTTLE_ACTIVE:
-						cliPortPrint("Alt Disenaged Throttle Active\n");
+						cliPortPrint("Alt:Disenaged Throttle Active      ");
 
 						break;
 
 					case ALT_HOLD_FIXED_AT_ENGAGEMENT_ALT:
-						cliPortPrint("Alt Hold Fixed at Engagement Alt\n");
+						cliPortPrint("Alt:Hold Fixed at Engagement Alt   ");
 
 						break;
 
 					case ALT_HOLD_AT_REFERENCE_ALTITUDE:
-						cliPortPrint("Alt Hold at Reference Alt\n");
+						cliPortPrint("Alt:Hold at Reference Alt          ");
 
 						break;
 
 					case VERTICAL_VELOCITY_HOLD_AT_REFERENCE_VELOCITY:
-						cliPortPrint("V Velocity Hold at Reference Vel\n");
+						cliPortPrint("Alt:Velocity Hold at Reference Vel ");
 
 						break;
 
 					case ALT_DISENGAGED_THROTTLE_INACTIVE:
-						cliPortPrint("Alt Disengaged Throttle Inactive\n");
+						cliPortPrint("Alt:Disengaged Throttle Inactive   ");
 
 						break;
 				}
+
+				if (rxCommand[AUX3] > MIDCOMMAND)
+					cliPortPrint("Mode:Simple  ");
+				else
+					cliPortPrint("Mode:Normal  ");
+
+				if (rxCommand[AUX4] > MIDCOMMAND)
+					cliPortPrint("Emergency Bail:Active\n");
+				else
+					cliPortPrint("Emergency Bail:Inactive\n");
 
 				validCliCommand = false;
 				break;
@@ -529,12 +537,20 @@ void cliCom(void)
 
                     cliPortPrintF("%4ld\n", spektrumBuf[maxChannelNum - 1]);
 			    }
+				else if (eepromConfig.receiverType == SBUS)
+				{
+		    		for (index = 0; index < 7; index++)
+                         cliPortPrintF("%4ld, ", sBusChannel[index]);
+
+                    cliPortPrintF("%4ld\n", sBusChannel[7]);
+
+				}
 				else
 				{
 					for (index = 0; index < numChannels - 1; index++)
-						cliPortPrintF("%4i, ", rxRead(index));
+						cliPortPrintF("%4i, ", Inputs[index].pulseWidth);
 
-					cliPortPrintF("%4i\n", rxRead(numChannels - 1));
+					cliPortPrintF("%4i\n", Inputs[numChannels - 1].pulseWidth);
 				}
 
 				validCliCommand = false;
@@ -842,7 +858,9 @@ void cliCom(void)
 
 			///////////////////////////////
 
-			case 'X': // Not Used
+			case 'X': // System CLI
+				systemCLI();
+
 				cliQuery = 'x';
 				validCliCommand = false;
 				break;
@@ -909,7 +927,7 @@ void cliCom(void)
 				cliPortPrint("'u' Command In Detent Discretes            'U' EEPROM CLI\n");
 				cliPortPrint("'v' Motor PWM Outputs                      'V' Reset EEPROM Parameters\n");
 				cliPortPrint("'w' Servo PWM Outputs                      'W' Write EEPROM Parameters\n");
-				cliPortPrint("'x' Terminate Serial Communication         'X' Not Used\n");
+				cliPortPrint("'x' Terminate Serial Communication         'X' System CLI\n");
 				cliPortPrint("\n");
 
 				cliPortPrint("Press space bar for more, or enter a command....\n");

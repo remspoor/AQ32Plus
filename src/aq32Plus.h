@@ -151,6 +151,7 @@ typedef struct gps_t
 	int32_t  heading;      // deg 1e-5
     uint8_t  numSats;
     uint8_t  fix;
+    uint8_t  statusFlags;
     uint32_t iTOW;         // mSec
     uint16_t year;         // years
     uint8_t  month;        // months
@@ -234,7 +235,7 @@ enum { DLPF_256HZ, DLPF_188HZ, DLPF_98HZ, DLPF_42HZ };
 // Receiver Configurations
 ///////////////////////////////////////////////////////////////////////////////
 
-enum { PPM, PWM, SPEKTRUM };
+enum { PPM, PWM, SPEKTRUM, SBUS };
 
 ///////////////////////////////////////////////////////////////////////////////
 // USB/UART Configurations
@@ -282,6 +283,8 @@ typedef struct eepromConfig_t
 
     uint8_t dlpfSetting;
 
+    uint8_t sensorOrientation;
+
     ///////////////////////////////////
 
     float rollAndPitchRateScaling;
@@ -325,6 +328,14 @@ typedef struct eepromConfig_t
     uint8_t  freeMixMotors;
 
     float    freeMix[8][3];
+
+    ///////////////////////////////////
+
+    float    rollAttAltCompensationGain;
+    float    rollAttAltCompensationLimit;
+
+    float    pitchAttAltCompensationGain;
+    float    pitchAttAltCompensationLimit;
 
     ///////////////////////////////////
 
@@ -398,9 +409,6 @@ typedef struct eepromConfig_t
 	float    batteryLow;
     float    batteryVeryLow;
     float    batteryMaxLow;
-
-    ///////////////////////////////////
-
 
     ///////////////////////////////////
 

@@ -1,13 +1,11 @@
 /*
-  August 2013
+  October 2012
 
-  Focused Flight32 Rev -
+  aq32Plus Rev -
 
-  Copyright (c) 2013 John Ihlein.  All rights reserved.
+  Copyright (c) 2012 John Ihlein.  All rights reserved.
 
   Open Source STM32 Based Multicopter Controller Software
-
-  Designed to run on the AQ32 Flight Control Board
 
   Includes code and/or ideas from:
 
@@ -15,9 +13,10 @@
   2)BaseFlight
   3)CH Robotics
   4)MultiWii
-  5)Paparazzi UAV
   5)S.O.H. Madgwick
   6)UAVX
+
+  Designed to run on the AQ32 Flight Control Board
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -85,13 +84,15 @@
 I2C_TypeDef *hmc5883I2C;
 uint8_t     hmc5883Address;
 
-float magScaleFactor[6];
+float magScaleFactor[3];
 
 uint8_t magDataUpdate = false;
 
 uint8_t newMagData = false;
 
 int16andUint8_t rawMag[3];
+
+float nonRotatedMagData[3];
 
 ///////////////////////////////////////////////////////////////////////////////
 // Read Magnetometer
@@ -124,9 +125,9 @@ uint8_t readMag(void)
 void initMag(void)
 {
     uint8_t I2C_Buffer_Rx[1] = { 0 };
-    uint8_t i, j;
+    uint8_t i;
 
-    if (eepromConfig.externalHMC5883 == true)
+    if (eepromConfig.externalHMC5883 == 3)
     {
     	hmc5883I2C = I2C2;
     	hmc5883Address = 0x1E;
@@ -143,36 +144,38 @@ void initMag(void)
     i2cWrite(hmc5883I2C, hmc5883Address, HMC5883_CONFIG_REG_B, SENSOR_GAIN);
     delay(20);
 
-    magScaleFactor[XAXIS + eepromConfig.externalHMC5883] = 0.0f;
-    magScaleFactor[YAXIS + eepromConfig.externalHMC5883] = 0.0f;
-    magScaleFactor[ZAXIS + eepromConfig.externalHMC5883] = 0.0f;
+    magScaleFactor[XAXIS] = 0.0f;
+    magScaleFactor[YAXIS] = 0.0f;
+    magScaleFactor[ZAXIS] = 0.0f;
 
     for (i = 0; i < 10; i++)
     {
-    	i2cWrite(hmc5883I2C, hmc5883Address, HMC5883_MODE_REG, OP_MODE_SINGLE);
+        i2cWrite(hmc5883I2C, hmc5883Address, HMC5883_MODE_REG, OP_MODE_SINGLE);
 
-        delay(20);
+        delay(50);
 
-        j = 100;
-
-        while (((I2C_Buffer_Rx[0] & STATUS_RDY) == 0x00 ) && (j > 0))
+        do
         {
-        	i2cRead(hmc5883I2C, hmc5883Address, HMC5883_STATUS_REG, 1, I2C_Buffer_Rx);
-        	j--;
+			delay(1);
+			i2cRead(hmc5883I2C, hmc5883Address, HMC5883_STATUS_REG, 1, I2C_Buffer_Rx);
+	    }
+		while ((I2C_Buffer_Rx[0] & STATUS_RDY) == 0x00);
+
+        if (readMag())
+        {
+            magScaleFactor[XAXIS] += (1.16f * 1090.0f) / (float)rawMag[XAXIS].value;
+            magScaleFactor[YAXIS] += (1.16f * 1090.0f) / (float)rawMag[YAXIS].value;
+            magScaleFactor[ZAXIS] += (1.08f * 1090.0f) / (float)rawMag[ZAXIS].value;
         }
+        else
+        {
+		    i--;
+    	}
+	}
 
-        readMag();
-
-        magScaleFactor[XAXIS + eepromConfig.externalHMC5883] += (1.16f * 1090.0f) / (float)rawMag[XAXIS].value;
-        magScaleFactor[YAXIS + eepromConfig.externalHMC5883] += (1.16f * 1090.0f) / (float)rawMag[YAXIS].value;
-        magScaleFactor[ZAXIS + eepromConfig.externalHMC5883] += (1.08f * 1090.0f) / (float)rawMag[ZAXIS].value;
-
-        I2C_Buffer_Rx[0] = 0;
-    }
-
-    magScaleFactor[XAXIS + eepromConfig.externalHMC5883] = fabsf(magScaleFactor[XAXIS] / 10.0f);
-    magScaleFactor[YAXIS + eepromConfig.externalHMC5883] = fabsf(magScaleFactor[YAXIS] / 10.0f);
-    magScaleFactor[ZAXIS + eepromConfig.externalHMC5883] = fabsf(magScaleFactor[ZAXIS] / 10.0f);
+    magScaleFactor[XAXIS] = fabsf(magScaleFactor[XAXIS + eepromConfig.externalHMC5883] / 10.0f);
+    magScaleFactor[YAXIS] = fabsf(magScaleFactor[YAXIS + eepromConfig.externalHMC5883] / 10.0f);
+    magScaleFactor[ZAXIS] = fabsf(magScaleFactor[ZAXIS + eepromConfig.externalHMC5883] / 10.0f);
 
     i2cWrite(hmc5883I2C, hmc5883Address, HMC5883_CONFIG_REG_A, SENSOR_CONFIG | NORMAL_MEASUREMENT_CONFIGURATION);
     delay(50);
