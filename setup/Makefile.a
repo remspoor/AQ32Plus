@@ -1,0 +1,57 @@
+
+CC := arm-none-eabi-gcc
+LD := arm-none-eabi-ld
+
+program_NAME := aq32Plus
+
+program_C_SRCS := $(wildcard *.c)
+program_C_OBJS := ${program_C_SRCS:.c=.o}
+program_OBJS := $(program_C_OBJS)
+
+program_INCLUDE_DIRS :=
+program_LIBRARY_DIRS :=
+program_LIBRARIES :=
+
+OPTS := -Os
+
+
+__FPU_USED=1 ARM_MATH_CM4 STM32F407VG STM32F40XX USE_STDPERIPH_DRIVER USE_USB_OTG_FS DEBUG
+
+
+/usr/local/gcc-arm-none-eabi-4_8-2014q1/arm-none-eabi/include"/>
+/usr/local/gcc-arm-none-eabi-4_8-2014q1/lib/gcc/arm-none-eabi/4.8.3/include"/>
+/usr/local/gcc-arm-none-eabi-4_8-2014q1/lib/gcc/arm-none-eabi/4.8.3/include-fixed"/>
+
+Libraries/CMSIS/Include Libraries/CMSIS/Device/ST/STM32F4xx/Include \
+Libraries/STM32F4xx_StdPeriph_Driver/inc Libraries/STM32_USB_Device_Library/Core/inc \
+Libraries/STM32_USB_Device_Library/Class/cdc/inc Libraries/STM32_USB_OTG_Driver/inc
+
+src
+src/calibration
+src/cli
+src/drv
+src/mavlink/common
+src/max7456
+src/sensors
+src/vcp
+src/wmm
+
+
+
+CPPFLAGS += $(foreach includedir,$(program_INCLUDE_DIRS),-I$(includedir))
+LDFLAGS += $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir))
+LDFLAGS += $(foreach library,$(program_LIBRARIES),-l$(library))
+
+.PHONY: all clean distclean
+
+all: $(program_NAME)
+
+$(program_NAME): $(program_OBJS)
+	$(LINK.cc) $(program_OBJS) -o $(program_NAME)
+
+clean:
+	@- $(RM) $(program_NAME)
+	@- $(RM) $(program_OBJS)
+
+distclean: clean
+
